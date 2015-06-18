@@ -15,7 +15,7 @@ Usage:
 
 Add the filters to your WebApiConfiguration.
 
-```
+```csharp
     public static class WebApiConfig
     {
         public static void Register(HttpConfiguration config)
