@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0"?>
 <package >
   <metadata>
-    <id>StatsDHelper.WebApi</id>
+    <id>statsd-helper-webapi</id>
     <version>$version$</version>
-    <authors>breathingdust</authors>
-    <owners>breathingdust</owners>
+    <authors>PayByPhone</authors>
+    <owners>PayByPhone</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>A couple of helper filters to make instrumenting status code responses to StatsD easier when using the StatsDHelper.</description>
+    <description>Filters to make instrumenting status code responses to StatsD easier when using the StatsDHelper.</description>
     <releaseNotes>Initial Release</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>statsd statsd-csharp-client webapi</tags>
