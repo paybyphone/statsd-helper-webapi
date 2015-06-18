@@ -5,13 +5,18 @@
     <version>$version$</version>
     <authors>PayByPhone</authors>
     <owners>PayByPhone</owners>
+    <projectUrl>https://github.com/paybyphone/statsd-helper-webapi</projectUrl>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Filters to make instrumenting status code responses to StatsD easier when using the StatsDHelper.</description>
     <releaseNotes>Initial Release</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>statsd statsd-csharp-client webapi</tags>
     <dependencies>
-      <dependency id="statsd-helper" />
+      <dependency id="statsd-helper" version="[0.0," />
     </dependencies>
   </metadata>
+  <files>
+    <file src="bin\Release\StatsDHelper.WebApi.dll" target="lib\net45\StatsDHelper.WebApi.dll" />
+  </files>
 </package>
