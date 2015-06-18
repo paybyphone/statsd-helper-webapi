@@ -11,7 +11,7 @@
     <copyright>Copyright 2015</copyright>
     <tags>statsd statsd-csharp-client webapi</tags>
     <dependencies>
-      <dependency id="StatsDHelper" />
+      <dependency id="statsd-helper" />
     </dependencies>
   </metadata>
 </package>
