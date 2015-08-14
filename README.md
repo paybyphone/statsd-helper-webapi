@@ -24,7 +24,7 @@ Add the filters to your WebApiConfiguration.
             config.ConfigureInstrumentFilters();
             ...
         }
-        
+
         private static void ConfigureInstrumentFilters(this HttpConfiguration config)
         {
             config.Filters.Add(new InstrumentStatusCodeFilterAttribute());
