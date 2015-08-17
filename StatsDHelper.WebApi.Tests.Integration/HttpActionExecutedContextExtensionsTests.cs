@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Controllers;
@@ -56,7 +54,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
             return await Task.Run(() =>
             {
                 var udpData = _udpClient.Receive(ref _ipEndPoint);
-                var stringData = System.Text.Encoding.UTF8.GetString(udpData);
+                var stringData = Encoding.UTF8.GetString(udpData);
 
                 return stringData;
             }, _cancellationToken);
@@ -76,8 +74,22 @@ namespace StatsDHelper.WebApi.Tests.Integration
 
             var result = await ListenForStatsDMessage();
 
-            result.Should().Contain("ApplicationName.ActionName.200:1|c");
+            result.Should().Contain("ApplicationName.actionname.200:1|c");
         }
+
+
+        [Test]
+        public async void when_action_name_is_mixed_case_then_it_will_be_changed_to_lowercase_for_the_metric_name()
+        {
+            _httpActionExecutedContext.ActionContext.ActionDescriptor.As<FakeActionDescriptor>().SetActionName("AcTiOnNaMe");
+
+            _httpActionExecutedContext.InstrumentResponse();
+
+            var result = await ListenForStatsDMessage();
+
+            result.Should().Contain("ApplicationName.actionname.200:1|c");
+        }
+
 
         [Test]
         public async void when_include_controller_name_is_enabled_then_the_metric_should_include_the_controller_name()
@@ -86,7 +98,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
 
             var result = await ListenForStatsDMessage();
 
-            result.Should().Contain("ApplicationName.ControllerName.ActionName.200:1|c");
+            result.Should().Contain("ApplicationName.controllername.actionname.200:1|c");
         }
     }
 }
