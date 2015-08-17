@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http.Filters;
 
 namespace StatsDHelper.WebApi.Filters
@@ -6,28 +7,27 @@ namespace StatsDHelper.WebApi.Filters
     public static class HttpActionExecutedContextExtensions
     {
         private static readonly IStatsDHelper StatsDHelper = global::StatsDHelper.StatsDHelper.Instance;
+        private static readonly IDictionary<string, Func<HttpActionExecutedContext, object>> TemplateRegistry = new Dictionary<string, Func<HttpActionExecutedContext, object>>
+        {
+            { "action", context => context.ActionContext.ActionDescriptor.ActionName },
+            { "controller", context => context.ActionContext.ActionDescriptor.ControllerDescriptor.ControllerName }
+        };
 
-        public static void InstrumentResponse(this HttpActionExecutedContext httpActionExecutedContext, bool includeActionName = true, bool includeControllerName = false)
+        public static void InstrumentResponse(this HttpActionExecutedContext httpActionExecutedContext, string template = "{action}")
         {
             if (httpActionExecutedContext.Response != null)
             {
-                var metricNameBuilder = new StringBuilder();
+                var metricName = template;
 
-                if (includeControllerName)
+                foreach (string templatedValue in TemplateRegistry.Keys)
                 {
-                    var controllerName = httpActionExecutedContext.ActionContext.ActionDescriptor.ControllerDescriptor.ControllerName;
-                    metricNameBuilder.Append(controllerName);
-                    metricNameBuilder.Append(".");
+                    var resolver = TemplateRegistry[templatedValue];
+                    var value = resolver(httpActionExecutedContext);
+
+                    metricName = metricName.Replace("{" + templatedValue + "}", value.ToString());
                 }
 
-                if (includeActionName)
-                {
-                    var actionName = httpActionExecutedContext.ActionContext.ActionDescriptor.ActionName;
-                    metricNameBuilder.Append(actionName);
-                    metricNameBuilder.Append(".");
-                }
-
-                StatsDHelper.LogCount(string.Format("{0}{1}", metricNameBuilder, (int)httpActionExecutedContext.Response.StatusCode));
+                StatsDHelper.LogCount(string.Format("{0}.{1}", metricName, (int)httpActionExecutedContext.Response.StatusCode));
             }
         }
     }

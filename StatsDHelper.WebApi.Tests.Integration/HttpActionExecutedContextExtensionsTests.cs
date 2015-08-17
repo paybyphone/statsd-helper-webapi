@@ -82,7 +82,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         [Test]
         public async void when_include_controller_name_is_enabled_then_the_metric_should_include_the_controller_name()
         {
-            _httpActionExecutedContext.InstrumentResponse(includeControllerName: true);
+            _httpActionExecutedContext.InstrumentResponse(template: "{controller}.{action}");
 
             var result = await ListenForStatsDMessage();
 
