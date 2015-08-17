@@ -10,6 +10,8 @@ namespace StatsDHelper.WebApi.Tests.Integration
 {
     public class FakeActionDescriptor : HttpActionDescriptor
     {
+        private string _actionName = "ActionName";
+
         public FakeActionDescriptor()
             : base(new HttpControllerDescriptor(new HttpConfiguration(), "ControllerName", typeof(object)))
         {
@@ -27,7 +29,12 @@ namespace StatsDHelper.WebApi.Tests.Integration
 
         public override string ActionName
         {
-            get { return "ActionName"; }
+            get { return _actionName; }
+        }
+
+        public void SetActionName(string actionName)
+        {
+            _actionName = actionName;
         }
 
         public override Type ReturnType

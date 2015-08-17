@@ -24,7 +24,7 @@ namespace StatsDHelper.WebApi.Filters
                     var resolver = TemplateRegistry[templatedValue];
                     var value = resolver(httpActionExecutedContext);
 
-                    metricName = metricName.Replace("{" + templatedValue + "}", value.ToString());
+                    metricName = metricName.Replace("{" + templatedValue + "}", value.ToString().ToLowerInvariant());
                 }
 
                 StatsDHelper.LogCount(string.Format("{0}.{1}", metricName, (int)httpActionExecutedContext.Response.StatusCode));
