@@ -1,13 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using FluentAssertions;
@@ -19,53 +18,26 @@ namespace StatsDHelper.WebApi.Tests.Integration
     [TestFixture]
     public class HttpActionExecutedContextExtensionsTests
     {
-        public class FakeActionDescriptor : HttpActionDescriptor
+        private HttpActionExecutedContext _httpActionExecutedContext;
+        private static CancellationTokenSource _cancellationTokenSource;
+        private CancellationToken _cancellationToken;
+
+        private UdpClient _udpClient;
+        private IPEndPoint _ipEndPoint;
+
+        [TestFixtureSetUp]
+        public void StartUdpListener()
         {
-            public FakeActionDescriptor() : base(new HttpControllerDescriptor(new HttpConfiguration(), "ControllerName", typeof(object)))
-            {
-            }
-
-            public override Collection<HttpParameterDescriptor> GetParameters()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override Task<object> ExecuteAsync(HttpControllerContext controllerContext, IDictionary<string, object> arguments, CancellationToken cancellationToken)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override string ActionName
-            {
-                get { return "ActionName"; }
-            }
-
-            public override Type ReturnType
-            {
-                get { throw new NotImplementedException(); }
-            }
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
+            _httpActionExecutedContext = SetUpFakeHttpActionContext();
         }
 
-        [Test]
-        public void when_instrumenting_response_statsd_message_should_be_sent()
-        {
-            Task<byte[]> task;
-            var httpActionExecutedContext = SetUpFakeHttpActionContext(out task);
-
-            httpActionExecutedContext.InstrumentResponse();
-
-            task.Wait();
-
-            var result = System.Text.Encoding.UTF8.GetString(task.Result);
-
-            result.Should().Contain("ApplicationName.ActionName.200:1|c");
-        }
-
-        private static HttpActionExecutedContext SetUpFakeHttpActionContext(out Task<byte[]> task)
+        private HttpActionExecutedContext SetUpFakeHttpActionContext()
         {
             var port = int.Parse(ConfigurationManager.AppSettings["StatsD.Port"]);
 
-            var actionContext = new HttpActionContext {ActionDescriptor = new FakeActionDescriptor()};
+            var actionContext = new HttpActionContext { ActionDescriptor = new FakeActionDescriptor() };
 
             var httpActionExecutedContext = new HttpActionExecutedContext
             {
@@ -73,32 +45,48 @@ namespace StatsDHelper.WebApi.Tests.Integration
                 Response = new HttpResponseMessage()
             };
 
-            task = Task.Factory.StartNew(() => ListenForUdpOnStatsDPort(port));
+            _udpClient = new UdpClient(port);
+            _ipEndPoint = new IPEndPoint(IPAddress.Loopback, port);
+
             return httpActionExecutedContext;
         }
 
-        [Test]
-        public void when_include_controller_name_is_enabled_then_the_metric_should_include_the_controller_name()
+        private async Task<string> ListenForStatsDMessage()
         {
-            Task<byte[]> task;
-            var httpActionExecutedContext = SetUpFakeHttpActionContext(out task);
+            return await Task.Run(() =>
+            {
+                var udpData = _udpClient.Receive(ref _ipEndPoint);
+                var stringData = System.Text.Encoding.UTF8.GetString(udpData);
 
-            httpActionExecutedContext.InstrumentResponse(includeControllerName: true);
-
-            task.Wait();
-
-            var result = System.Text.Encoding.UTF8.GetString(task.Result);
-
-            result.Should().Contain("ApplicationName.ControllerName.ActionName.200:1|c");
+                return stringData;
+            }, _cancellationToken);
         }
 
-        private static byte[] ListenForUdpOnStatsDPort(int port)
+        [TestFixtureTearDown]
+        public void CancelUdpListener()
         {
-            var udpClient = new UdpClient(port);
-            var ipEndPoint = new IPEndPoint(IPAddress.Loopback, port);
-            var data = udpClient.Receive(ref ipEndPoint);
+            _udpClient.Close();
+            _cancellationTokenSource.Cancel();
+        }
 
-            return data;
+        [Test]
+        public async void when_instrumenting_response_statsd_message_should_be_sent()
+        {
+            _httpActionExecutedContext.InstrumentResponse();
+
+            var result = await ListenForStatsDMessage();
+
+            result.Should().Contain("ApplicationName.ActionName.200:1|c");
+        }
+
+        [Test]
+        public async void when_include_controller_name_is_enabled_then_the_metric_should_include_the_controller_name()
+        {
+            _httpActionExecutedContext.InstrumentResponse(includeControllerName: true);
+
+            var result = await ListenForStatsDMessage();
+
+            result.Should().Contain("ApplicationName.ControllerName.ActionName.200:1|c");
         }
     }
 }
