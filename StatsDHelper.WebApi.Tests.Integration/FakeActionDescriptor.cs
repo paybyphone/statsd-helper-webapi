@@ -27,10 +27,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
             throw new NotImplementedException();
         }
 
-        public override string ActionName
-        {
-            get { return _actionName; }
-        }
+        public override string ActionName => _actionName;
 
         public void SetActionName(string actionName)
         {
