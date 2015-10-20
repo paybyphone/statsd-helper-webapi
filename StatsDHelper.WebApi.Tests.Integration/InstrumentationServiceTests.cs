@@ -1,17 +1,16 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using StatsDHelper.WebApi.Filters;
 
 namespace StatsDHelper.WebApi.Tests.Integration
 {
     [TestFixture]
-    public class HttpActionExecutedContextExtensionsTests : BaseHttpActionExecutedContextExtensionsTests
+    public class InstrumentationServiceTests : BaseInstrumentationServiceTests
     {
         [Test]
         public async void when_instrumenting_response_status_code_message_should_be_sent()
         {
-            HttpActionExecutedContext.InstrumentResponse();
+            InstrumentationService.InstrumentResponse(HttpActionExecutedContext);
 
             var result = await ListenForTwoStatsDMessages();
 
@@ -21,7 +20,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         [Test]
         public async void when_instrumenting_response_latency_message_should_be_sent()
         {
-            HttpActionExecutedContext.InstrumentResponse();
+            InstrumentationService.InstrumentResponse(HttpActionExecutedContext);
 
             var result = await ListenForTwoStatsDMessages();
 
@@ -33,7 +32,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         {
             HttpActionExecutedContext.ActionContext.ActionDescriptor.As<FakeActionDescriptor>().SetActionName("AcTiOnNaMe");
 
-            HttpActionExecutedContext.InstrumentResponse();
+            InstrumentationService.InstrumentResponse(HttpActionExecutedContext);
 
             var result = await ListenForTwoStatsDMessages();
 
@@ -44,7 +43,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         [Test]
         public async void when_include_controller_name_is_enabled_then_the_metric_should_include_the_controller_name()
         {
-            HttpActionExecutedContext.InstrumentResponse(template: "{controller}.{action}");
+            InstrumentationService.InstrumentResponse(HttpActionExecutedContext, template: "{controller}.{action}");
 
             var result = await ListenForTwoStatsDMessages();
 
@@ -54,7 +53,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         [Test]
         public void when_response_returns_execution_time_is_added_to_the_headers()
         {
-            HttpActionExecutedContext.InstrumentResponse(template: "{controller}.{action}");
+            InstrumentationService.InstrumentResponse(HttpActionExecutedContext, template: "{controller}.{action}");
 
             HttpActionExecutedContext.Response.Headers.Any(o => o.Key.Contains("X-ExecutionTime")).Should().BeTrue();
         }

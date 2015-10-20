@@ -10,23 +10,28 @@ using System.Threading.Tasks;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using NUnit.Framework;
+using StatsDHelper.WebApi.Filters;
+using StatsDHelper.WebApi.Services;
 
 namespace StatsDHelper.WebApi.Tests.Integration
 {
-    public abstract class BaseHttpActionExecutedContextExtensionsTests
+    public abstract class BaseInstrumentationServiceTests
     {
         protected HttpActionExecutedContext HttpActionExecutedContext;
         protected static CancellationTokenSource CancellationTokenSource;
         protected CancellationToken CancellationToken;
 
         private UdpClient _udpClient;
+        protected InstrumentationService InstrumentationService;
 
         [SetUp]
-        public void StartUdpListener()
+        public void SetUp()
         {
             CancellationTokenSource = new CancellationTokenSource();
             CancellationToken = CancellationTokenSource.Token;
             HttpActionExecutedContext = SetUpFakeHttpActionContext();
+
+            InstrumentationService = new InstrumentationService();
         }
 
         protected HttpActionExecutedContext SetUpFakeHttpActionContext()

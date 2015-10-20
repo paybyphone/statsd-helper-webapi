@@ -65,9 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseHttpActionExecutedContextExtensionsTests.cs" />
+    <Compile Include="BaseInstrumentationServiceTests.cs" />
     <Compile Include="FakeActionDescriptor.cs" />
-    <Compile Include="HttpActionExecutedContextExtensionsTests.cs" />
+    <Compile Include="InstrumentationServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
