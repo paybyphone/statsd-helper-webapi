@@ -11,6 +11,17 @@ For example:
 com.example.servername.api.validate.404
 ```
 
+You can also return the latency of the request in the response headers:
+
+```
+X-ExecutionTime : 123ms
+```
+
+This is configurable by an appsetting, it is off by default.
+
+```xml
+<add key="StatsD.WebApi.Response.LatencyHeader.Enabled" value="true" />
+```
 Usage:
 
 Add the filters to your WebApiConfiguration.

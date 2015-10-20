@@ -8,11 +8,14 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("StatsDHelper.WebApi")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Breathingdust")]
+[assembly: AssemblyCompany("PayByPhone")]
 [assembly: AssemblyProduct("StatsDHelper.WebApi")]
-[assembly: AssemblyCopyright("Copyright © Breathingdust 2015")]
+[assembly: AssemblyCopyright("Copyright © PayByPhone 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+[assembly: InternalsVisibleTo("StatsDHelper.WebApi.Tests.Integration")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

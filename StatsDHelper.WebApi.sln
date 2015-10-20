@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDHelper.WebApi", "StatsDHelper.WebApi\StatsDHelper.WebApi.csproj", "{5950F807-6F81-45E0-A876-84A1810B0831}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsDHelper.WebApi.Tests.Integration", "StatsDHelper.WebApi.Tests.Integration\StatsDHelper.WebApi.Tests.Integration.csproj", "{FCE4FDBC-46D5-4660-9148-F43E5A1E2105}"
