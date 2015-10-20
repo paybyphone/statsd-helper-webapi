@@ -9,20 +9,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using FakeItEasy;
 using NUnit.Framework;
-using StatsDHelper.WebApi.Filters;
 using StatsDHelper.WebApi.Services;
 
 namespace StatsDHelper.WebApi.Tests.Integration
 {
-    public abstract class BaseInstrumentationServiceTests
+    abstract class BaseInstrumentationServiceTests
     {
         protected HttpActionExecutedContext HttpActionExecutedContext;
         protected static CancellationTokenSource CancellationTokenSource;
         protected CancellationToken CancellationToken;
 
         private UdpClient _udpClient;
-        protected InstrumentationService InstrumentationService;
+        protected IInstrumentationService InstrumentationService;
+        protected IAppSettings AppSettings;
 
         [SetUp]
         public void SetUp()
@@ -31,7 +32,9 @@ namespace StatsDHelper.WebApi.Tests.Integration
             CancellationToken = CancellationTokenSource.Token;
             HttpActionExecutedContext = SetUpFakeHttpActionContext();
 
-            InstrumentationService = new InstrumentationService();
+            AppSettings = A.Fake<IAppSettings>();
+
+            InstrumentationService = new InstrumentationService(AppSettings);
         }
 
         protected HttpActionExecutedContext SetUpFakeHttpActionContext()

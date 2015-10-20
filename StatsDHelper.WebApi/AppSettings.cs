@@ -3,9 +3,9 @@ using System.Configuration;
 
 namespace StatsDHelper.WebApi
 {
-    public class AppSettings
+    internal class AppSettings : IAppSettings
     {
-        public static bool GetBoolean(string key)
+        public bool GetBoolean(string key)
         {
             bool value;
             bool.TryParse(ConfigurationManager.AppSettings[key], out value);

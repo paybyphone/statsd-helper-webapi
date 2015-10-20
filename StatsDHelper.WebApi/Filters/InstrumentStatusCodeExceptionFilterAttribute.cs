@@ -6,7 +6,7 @@ namespace StatsDHelper.WebApi.Filters
     public class InstrumentStatusCodeExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private readonly string _template;
-        private readonly InstrumentationService _instrumentationService;
+        private readonly IInstrumentationService _instrumentationService;
 
         public InstrumentStatusCodeExceptionFilterAttribute(string template = "{action}")
         {

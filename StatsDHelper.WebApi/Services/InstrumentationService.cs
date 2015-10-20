@@ -5,15 +5,26 @@ using System.Web.Http.Filters;
 
 namespace StatsDHelper.WebApi.Services
 {
-    public class InstrumentationService : IInstrumentationService
+    internal class InstrumentationService : IInstrumentationService
     {
-        private readonly IStatsDHelper _statsDHelper = global::StatsDHelper.StatsDHelper.Instance;
+        private readonly IAppSettings _appSettings;
+        private readonly IStatsDHelper _statsDHelper = StatsDHelper.Instance;
 
         private readonly IDictionary<string, Func<HttpActionExecutedContext, object>> _templateRegistry = new Dictionary<string, Func<HttpActionExecutedContext, object>>
         {
             {"action", context => context.ActionContext.ActionDescriptor.ActionName},
             {"controller", context => context.ActionContext.ActionDescriptor.ControllerDescriptor.ControllerName}
         };
+
+        public InstrumentationService()
+        {
+            _appSettings = new AppSettings();
+        }
+
+        internal InstrumentationService(IAppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
 
         public void InstrumentResponse(HttpActionExecutedContext httpActionExecutedContext, string template = "{action}")
         {
@@ -38,7 +49,7 @@ namespace StatsDHelper.WebApi.Services
                     requestStopwatch.Stop();
                     _statsDHelper.LogTiming($"{metricName}.latency", (long) requestStopwatch.Elapsed.TotalMilliseconds);
 
-                    if (AppSettings.GetBoolean(Constants.Configuration.LatencyHeaderEnabled))
+                    if (_appSettings.GetBoolean(Constants.Configuration.LatencyHeaderEnabled))
                     {
                         var response = httpActionExecutedContext.Response;
                         response.Headers.Add("X-ExecutionTime", requestStopwatch.Elapsed.ToString());

@@ -2,7 +2,7 @@
 
 namespace StatsDHelper.WebApi.Services
 {
-    public interface IInstrumentationService
+    internal interface IInstrumentationService
     {
         void InstrumentResponse(HttpActionExecutedContext httpActionExecutedContext, string template = "{action}");
     }

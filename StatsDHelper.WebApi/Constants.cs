@@ -1,12 +1,12 @@
 ﻿namespace StatsDHelper.WebApi
 {
-    public class Constants
+    internal class Constants
     {
-        public static string StopwatchKey = "ExecutionTimeStopwatch";
+        internal static string StopwatchKey = "ExecutionTimeStopwatch";
 
-        public class Configuration
+        internal class Configuration
         {
-            public static string LatencyHeaderEnabled = "StatsD.WebApi.Response.LatencyHeader.Enabled";
+            internal static string LatencyHeaderEnabled = "StatsD.WebApi.Response.LatencyHeader.Enabled";
         }
     }
 }

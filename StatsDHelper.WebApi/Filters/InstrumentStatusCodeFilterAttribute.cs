@@ -10,7 +10,7 @@ namespace StatsDHelper.WebApi.Filters
     public class InstrumentStatusCodeFilterAttribute : ActionFilterAttribute
     {
         private readonly string _template;
-        private readonly InstrumentationService _instrumentationService;
+        private readonly IInstrumentationService _instrumentationService;
 
         public InstrumentStatusCodeFilterAttribute(string template = "{action}")
         {
