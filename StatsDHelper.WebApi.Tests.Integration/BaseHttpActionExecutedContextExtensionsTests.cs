@@ -50,7 +50,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
             return httpActionExecutedContext;
         }
 
-        protected async Task<List<string>> ListenForTwoStatsDMessage()
+        protected async Task<List<string>> ListenForTwoStatsDMessages()
         {
             return await Task.Run(async () =>
             {

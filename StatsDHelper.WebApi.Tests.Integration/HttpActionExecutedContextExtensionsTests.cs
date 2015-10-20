@@ -13,7 +13,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         {
             HttpActionExecutedContext.InstrumentResponse();
 
-            var result = await ListenForTwoStatsDMessage();
+            var result = await ListenForTwoStatsDMessages();
 
             result.Any(o => o.Contains("ApplicationName.actionname.200:1|c")).Should().BeTrue();
         }
@@ -23,7 +23,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         {
             HttpActionExecutedContext.InstrumentResponse();
 
-            var result = await ListenForTwoStatsDMessage();
+            var result = await ListenForTwoStatsDMessages();
 
             result.Any(o => o.Contains("ApplicationName.actionname.latency:") && o.EndsWith("|ms")).Should().BeTrue();
         }
@@ -35,7 +35,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
 
             HttpActionExecutedContext.InstrumentResponse();
 
-            var result = await ListenForTwoStatsDMessage();
+            var result = await ListenForTwoStatsDMessages();
 
             result.First().Should().Contain("ApplicationName.actionname.200:1|c");
         }
@@ -46,7 +46,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         {
             HttpActionExecutedContext.InstrumentResponse(template: "{controller}.{action}");
 
-            var result = await ListenForTwoStatsDMessage();
+            var result = await ListenForTwoStatsDMessages();
 
             result.First().Should().Contain("ApplicationName.controllername.actionname.200:1|c");
         }
