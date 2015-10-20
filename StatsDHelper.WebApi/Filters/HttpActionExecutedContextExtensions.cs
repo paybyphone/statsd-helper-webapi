@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Web.Http.Filters;
 
 namespace StatsDHelper.WebApi.Filters
@@ -15,6 +16,8 @@ namespace StatsDHelper.WebApi.Filters
 
         public static void InstrumentResponse(this HttpActionExecutedContext httpActionExecutedContext, string template = "{action}")
         {
+            var requestStopwatch = httpActionExecutedContext.Request.Properties[Constants.StopwatchKey] as Stopwatch;
+
             if (httpActionExecutedContext.Response != null)
             {
                 var metricName = template;
@@ -27,7 +30,15 @@ namespace StatsDHelper.WebApi.Filters
                     metricName = metricName.Replace("{" + templatedValue + "}", value.ToString().ToLowerInvariant());
                 }
 
-                StatsDHelper.LogCount(string.Format("{0}.{1}", metricName, (int)httpActionExecutedContext.Response.StatusCode));
+                StatsDHelper.LogCount($"{metricName}.{(int) httpActionExecutedContext.Response.StatusCode}");
+
+                if (requestStopwatch != null)
+                {   
+                    requestStopwatch.Stop();
+                    StatsDHelper.LogTiming($"{metricName}.latency", (long)requestStopwatch.Elapsed.TotalMilliseconds);
+                    var response = httpActionExecutedContext.Response;
+                    response.Headers.Add("X-ExecutionTime", requestStopwatch.Elapsed.ToString());
+                }
             }
         }
     }
