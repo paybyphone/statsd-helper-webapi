@@ -52,7 +52,7 @@ namespace StatsDHelper.WebApi.Services
                     if (_appSettings.GetBoolean(Constants.Configuration.LatencyHeaderEnabled))
                     {
                         var response = httpActionExecutedContext.Response;
-                        response.Headers.Add("X-ExecutionTime", requestStopwatch.Elapsed.ToString());
+                        response.Headers.Add("X-ExecutionTime",$"{Math.Round(requestStopwatch.Elapsed.TotalMilliseconds)}ms" );
                     }
                 }
             }
