@@ -40,19 +40,19 @@ namespace StatsDHelper.WebApi.Services
                     metricName = metricName.Replace("{" + templatedValue + "}", value.ToString().ToLowerInvariant());
                 }
 
-                _statsDHelper.LogCount($"{metricName}.{(int) httpActionExecutedContext.Response.StatusCode}");
+                _statsDHelper.LogCount(string.Format("{0}.{1}",metricName, (int)httpActionExecutedContext.Response.StatusCode));
 
                 var requestStopwatch = httpActionExecutedContext.Request.Properties[Constants.StopwatchKey] as Stopwatch;
 
                 if (requestStopwatch != null)
                 {
                     requestStopwatch.Stop();
-                    _statsDHelper.LogTiming($"{metricName}.latency", (long) requestStopwatch.Elapsed.TotalMilliseconds);
+                    _statsDHelper.LogTiming(string.Format("{0}.latency", metricName), (long) requestStopwatch.Elapsed.TotalMilliseconds);
 
                     if (_appSettings.GetBoolean(Constants.Configuration.LatencyHeaderEnabled))
                     {
                         var response = httpActionExecutedContext.Response;
-                        response.Headers.Add("X-ExecutionTime",$"{Math.Round(requestStopwatch.Elapsed.TotalMilliseconds)}ms" );
+                        response.Headers.Add("X-ExecutionTime",string.Format("{0}ms",Math.Round(requestStopwatch.Elapsed.TotalMilliseconds)));
                     }
                 }
             }
