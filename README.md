@@ -24,7 +24,7 @@ This is configurable by an appsetting, it is off by default.
 ```
 Usage:
 
-Add the filters to your WebApiConfiguration.
+Add the InstrumentActionMessageHandler into your WebAPI pipeline
 
 ```csharp
     public static class WebApiConfig
@@ -38,8 +38,24 @@ Add the filters to your WebApiConfiguration.
 
         private static void ConfigureInstrumentFilters(this HttpConfiguration config)
         {
-            config.Filters.Add(new InstrumentStatusCodeFilterAttribute());
-            config.Filters.Add(new InstrumentStatusCodeExceptionFilterAttribute());
+            config.MessageHandlers.Add(new InstrumentActionMessageHandler());
+        }
+    }
+```
+
+Reponse instrumentation in the message handler will run after all controller logic and exception filters.
+This means metrics will be generated based the response after any controller level
+execption handling has taken place.
+
+If you want to instrument only specific actions the InstrumentStatusCodeFilterAttribute
+can be used.
+
+```csharp
+    public class ApiController
+    {
+		[InstrumentStatusCodeFilter]
+        public void ApiAction()
+        {
         }
     }
 ```
