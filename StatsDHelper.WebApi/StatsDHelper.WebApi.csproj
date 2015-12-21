@@ -68,6 +68,7 @@
     <Compile Include="Filters\InstrumentStatusCodeExceptionFilterAttribute.cs" />
     <Compile Include="Filters\InstrumentStatusCodeFilterAttribute.cs" />
     <Compile Include="IAppSettings.cs" />
+    <Compile Include="MessageHandlers\InstrumentActionMessageHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IInstrumentationService.cs" />
     <Compile Include="Services\InstrumentationService.cs" />
