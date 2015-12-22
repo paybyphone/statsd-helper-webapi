@@ -50,6 +50,21 @@ namespace StatsDHelper.WebApi.Tests.Integration
             result.Any(o => o.Contains("ApplicationName.actionname.latency:") && o.EndsWith("|ms")).Should().BeTrue();
         }
 
+        [Test]
+        public async void when_template_includes_controller_name_then_the_metric_should_include_the_controller_name()
+        {
+            _handler.InnerHandler = new InstrumentActionMessageHandler("{controller}.{action}")
+            {
+                InnerHandler = new FakeHandler(HttpActionExecutedContext)
+            };
+
+            await _handler.Run(HttpActionExecutedContext.Request);
+
+            var result = await ListenForTwoStatsDMessages();
+
+            result.First().Should().Contain("ApplicationName.controllername.actionname.200:1|c");
+        }
+
         private class HandlerAccessor : DelegatingHandler
         {
             private readonly CancellationTokenSource _tokenSource;

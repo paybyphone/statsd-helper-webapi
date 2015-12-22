@@ -27,7 +27,7 @@ namespace StatsDHelper.WebApi.MessageHandlers
 
             var response = await base.SendAsync(request, cancellationToken);
 
-            _instrumentationService.InstrumentResponse(response);
+            _instrumentationService.InstrumentResponse(response, _template);
 
             return response;
         }
