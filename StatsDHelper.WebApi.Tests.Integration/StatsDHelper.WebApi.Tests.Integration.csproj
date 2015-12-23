@@ -69,8 +69,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseInstrumentationServiceTests.cs" />
+    <Compile Include="BaseInstrumentationTests.cs" />
     <Compile Include="FakeActionDescriptor.cs" />
+    <Compile Include="InstrumentActionMessageHandlerTests.cs" />
     <Compile Include="InstrumentationServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

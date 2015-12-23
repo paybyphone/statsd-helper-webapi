@@ -6,8 +6,14 @@ using NUnit.Framework;
 namespace StatsDHelper.WebApi.Tests.Integration
 {
     [TestFixture]
-    class InstrumentationServiceTests : BaseInstrumentationServiceTests
+    class InstrumentationServiceTests : BaseInstrumentationTests
     {
+        [SetUp]
+        public void Setup()
+        {
+            AddRequestStopwatch(HttpActionExecutedContext);
+        }
+
         [Test]
         public async void when_instrumenting_response_status_code_message_should_be_sent()
         {

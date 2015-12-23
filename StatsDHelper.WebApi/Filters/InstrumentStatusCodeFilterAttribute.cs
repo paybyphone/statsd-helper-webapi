@@ -25,9 +25,7 @@ namespace StatsDHelper.WebApi.Filters
 
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
-            var requestStopwatch = new Stopwatch();
-            actionContext.Request.Properties.Add(Constants.StopwatchKey, requestStopwatch);
-            requestStopwatch.Start();
+            _instrumentationService.TimeRequest(actionContext.Request);
 
             base.OnActionExecuting(actionContext);
         }

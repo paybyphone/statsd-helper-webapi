@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
 namespace StatsDHelper.WebApi.Services
@@ -10,10 +12,10 @@ namespace StatsDHelper.WebApi.Services
         private readonly IAppSettings _appSettings;
         private readonly IStatsDHelper _statsDHelper = StatsDHelper.Instance;
 
-        private readonly IDictionary<string, Func<HttpActionExecutedContext, object>> _templateRegistry = new Dictionary<string, Func<HttpActionExecutedContext, object>>
+        private readonly IDictionary<string, Func<HttpActionDescriptor, object>> _templateRegistry = new Dictionary<string, Func<HttpActionDescriptor, object>>
         {
-            {"action", context => context.ActionContext.ActionDescriptor.ActionName},
-            {"controller", context => context.ActionContext.ActionDescriptor.ControllerDescriptor.ControllerName}
+            {"action", actionDescriptor => actionDescriptor.ActionName},
+            {"controller", actionDescriptor => actionDescriptor.ControllerDescriptor.ControllerName}
         };
 
         public InstrumentationService()
@@ -26,33 +28,50 @@ namespace StatsDHelper.WebApi.Services
             _appSettings = appSettings;
         }
 
+        public void TimeRequest(HttpRequestMessage request)
+        {
+            var requestStopwatch = new Stopwatch();
+            request.Properties.Add(Constants.StopwatchKey, requestStopwatch);
+            requestStopwatch.Start();
+        }
+
         public void InstrumentResponse(HttpActionExecutedContext httpActionExecutedContext, string template = "{action}")
         {
-            if (httpActionExecutedContext.Response != null)
+            InstrumentResponse(httpActionExecutedContext.Response, template);
+        }
+
+        public void InstrumentResponse(HttpResponseMessage response, string template = "{action}")
+        {
+            if (response != null && response.RequestMessage != null)
             {
-                var metricName = template;
-
-                foreach (string templatedValue in _templateRegistry.Keys)
+                var actionDescriptor = response.RequestMessage.GetActionDescriptor();
+                if (actionDescriptor != null)
                 {
-                    var resolver = _templateRegistry[templatedValue];
-                    var value = resolver(httpActionExecutedContext);
+                    var metricName = template;
 
-                    metricName = metricName.Replace("{" + templatedValue + "}", value.ToString().ToLowerInvariant());
-                }
-
-                _statsDHelper.LogCount(string.Format("{0}.{1}",metricName, (int)httpActionExecutedContext.Response.StatusCode));
-
-                var requestStopwatch = httpActionExecutedContext.Request.Properties[Constants.StopwatchKey] as Stopwatch;
-
-                if (requestStopwatch != null)
-                {
-                    requestStopwatch.Stop();
-                    _statsDHelper.LogTiming(string.Format("{0}.latency", metricName), (long) requestStopwatch.Elapsed.TotalMilliseconds);
-
-                    if (_appSettings.GetBoolean(Constants.Configuration.LatencyHeaderEnabled))
+                    foreach (string templatedValue in _templateRegistry.Keys)
                     {
-                        var response = httpActionExecutedContext.Response;
-                        response.Headers.Add("X-ExecutionTime",string.Format("{0}ms",Math.Round(requestStopwatch.Elapsed.TotalMilliseconds)));
+                        var resolver = _templateRegistry[templatedValue];
+                        var value = resolver(actionDescriptor);
+
+                        metricName = metricName.Replace("{" + templatedValue + "}", value.ToString().ToLowerInvariant());
+                    }
+
+                    _statsDHelper.LogCount(string.Format("{0}.{1}", metricName, (int) response.StatusCode));
+
+                    var requestStopwatch = response.RequestMessage.Properties[Constants.StopwatchKey] as Stopwatch;
+
+                    if (requestStopwatch != null)
+                    {
+                        requestStopwatch.Stop();
+                        _statsDHelper.LogTiming(string.Format("{0}.latency", metricName),
+                            (long) requestStopwatch.Elapsed.TotalMilliseconds);
+
+                        if (_appSettings.GetBoolean(Constants.Configuration.LatencyHeaderEnabled))
+                        {
+                            response.Headers.Add("X-ExecutionTime",
+                                string.Format("{0}ms", Math.Round(requestStopwatch.Elapsed.TotalMilliseconds)));
+                        }
                     }
                 }
             }
