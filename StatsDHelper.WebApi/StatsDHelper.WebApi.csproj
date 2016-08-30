@@ -41,7 +41,7 @@
       <HintPath>..\packages\StatsdCsharpClient.1.3.0.0\lib\net45\StatsdClient.dll</HintPath>
     </Reference>
     <Reference Include="StatsDHelper, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\statsd-helper.0.0.27\lib\net45\StatsDHelper.dll</HintPath>
+      <HintPath>..\packages\statsd-helper.0.0.28\lib\net45\StatsDHelper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
