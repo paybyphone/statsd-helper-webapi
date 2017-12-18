@@ -31,7 +31,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         }
 
         [Test]
-        public async void when_instrumenting_response_status_code_message_should_be_sent()
+        public async Task when_instrumenting_response_status_code_message_should_be_sent()
         {
             await _handler.Run(HttpActionExecutedContext.Request);
 
@@ -41,7 +41,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         }
 
         [Test]
-        public async void when_instrumenting_response_latency_message_should_be_sent()
+        public async Task when_instrumenting_response_latency_message_should_be_sent()
         {
             await _handler.Run(HttpActionExecutedContext.Request);
 
@@ -51,7 +51,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         }
 
         [Test]
-        public async void when_template_includes_controller_name_then_the_metric_should_include_the_controller_name()
+        public async Task when_template_includes_controller_name_then_the_metric_should_include_the_controller_name()
         {
             _handler.InnerHandler = new InstrumentActionMessageHandler("{controller}.{action}")
             {
