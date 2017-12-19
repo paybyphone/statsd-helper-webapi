@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         }
 
         [Test]
-        public async void when_instrumenting_response_status_code_message_should_be_sent()
+        public async Task when_instrumenting_response_status_code_message_should_be_sent()
         {
             LatencyHeaderOff();
 
@@ -37,7 +38,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         }
 
         [Test]
-        public async void when_instrumenting_response_latency_message_should_be_sent()
+        public async Task when_instrumenting_response_latency_message_should_be_sent()
         {
             LatencyHeaderOff();
 
@@ -49,7 +50,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
         }
 
         [Test]
-        public async void when_action_name_is_mixed_case_then_it_will_be_changed_to_lowercase_for_the_metric_name()
+        public async Task when_action_name_is_mixed_case_then_it_will_be_changed_to_lowercase_for_the_metric_name()
         {
             LatencyHeaderOff();
 
@@ -64,7 +65,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
 
 
         [Test]
-        public async void when_include_controller_name_is_enabled_then_the_metric_should_include_the_controller_name()
+        public async Task when_include_controller_name_is_enabled_then_the_metric_should_include_the_controller_name()
         {
             LatencyHeaderOff();
 
