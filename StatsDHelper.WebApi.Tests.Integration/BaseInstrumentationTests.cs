@@ -37,7 +37,7 @@ namespace StatsDHelper.WebApi.Tests.Integration
             InstrumentationService = new InstrumentationService(AppSettings);
 
             var port = int.Parse(ConfigurationManager.AppSettings["StatsD.Port"]);
-            _udpClient = new UdpClient(port + 1);
+            _udpClient = new UdpClient(port);
         }
 
         protected HttpActionExecutedContext GetFakeHttpActionContext()
